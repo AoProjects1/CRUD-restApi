@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  persons_db:
+    container_name: persons_db
+    image: postgres:12
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  restapi-assig-app:
+    container_name: restapi-assig-app
+    image: ahmedosamaswe/restapi-assignment:1.1.0
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_URL=postgresql://postgres:postgres@persons_db:5432/postgres
+    depends_on:
+      - persons_db
+
+  frontend-app:
+    container_name: frontend-app
+    image: ahmedosamaswe/restapi-frontend:1.0.0
+    ports:
+      - "8081:80" 
+    depends_on:
+      - restapi-assig-app
+
+
+
+volumes:
+  pgdata: {}
+
+  #---------------------------------------------------------------------------------------------------------#
+  # Note: Please check if all containers are up and running and if not try to re-run the stopped container. #
+  #---------------------------------------------------------------------------------------------------------#
