@@ -1,16 +1,18 @@
+#### this is version of docker compose file format we choose the version that is siutable for the docker version we use #### 
 version: "3.9"
 
+#### it means all the services (containers) we made and it really helps to spicify all information here instead of writing long commands ####
 services:
   persons_db:
-    container_name: persons_db
-    image: postgres:12
-    ports:
+    container_name: persons_db    #### naming The container that will run ####
+    image: postgres:12            #### image used to run container #### 
+    ports:                        #### mapping machine port to container port (forwarding traffic from host port to container port) ####
       - "5432:5432"
-    environment:
+    environment:                  #### environment variables to connect to database ####
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_DB=postgres
-    volumes:
+    volumes:                      #### binding data from local directory to container directory ####
       - pgdata:/var/lib/postgresql/data
 
   restapi-assig-app:
@@ -20,8 +22,10 @@ services:
       - "5000:5000"
     environment:
       - DB_URL=postgresql://postgres:postgres@persons_db:5432/postgres
-    depends_on:
-      - persons_db
+    depends_on:             #### dependencies that the container needs to run (it controls startup and shutdown order of services) ####
+      persons_db:
+        condition: service_started     #### the condition to start the dependent service (in this case we need to check that db started before api container)####
+
 
   frontend-app:
     container_name: frontend-app
